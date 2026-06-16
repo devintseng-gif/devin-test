@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>曾能毅｜SI 系統架構師 × AI 顧問 × 數位轉型專家</title>
+  <meta name="description" content="曾能毅個人品牌網站｜SI 系統架構師、AI 顧問、企業系統整合與數位轉型專家。" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#007EC7',
+            'primary-dark': '#003B6F',
+            secondary: '#00B388',
+            accent: '#FF8A00',
+            purple: '#6F42C1',
+            softBg: '#F5F7FA'
+          },
+          boxShadow: {
+            glow: '0 10px 40px rgba(0, 126, 199, 0.18)',
+            glowMint: '0 0 0 1px rgba(0, 179, 136, .16), 0 18px 60px rgba(0, 179, 136, .18)'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '0% 50%' },
+              '100%': { backgroundPosition: '200% 50%' }
+            },
+            softIn: {
+              '0%': { opacity: '0', transform: 'translateY(18px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            }
+          },
+          animation: {
+            float: 'float 8s ease-in-out infinite',
+            shimmer: 'shimmer 12s linear infinite',
+            softIn: 'softIn .8s ease-out both'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      background:
+        radial-gradient(circle at 15% 15%, rgba(0,126,199,0.10), transparent 26%),
+        radial-gradient(circle at 85% 15%, rgba(111,66,193,0.10), transparent 24%),
+        radial-gradient(circle at 50% 80%, rgba(0,179,136,0.10), transparent 26%),
+        linear-gradient(180deg, #ffffff 0%, #F5F7FA 100%);
+      color: #1A1F2C;
+    }
+    .glass {
+      background: rgba(255,255,255,0.66);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(148,163,184,0.18);
+    }
+    .glass-strong {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(148,163,184,0.20);
+    }
+    .grid-fine {
+      background-image:
+        linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), rgba(0,0,0,.05));
+      pointer-events: none;
+    }
+    .section-reveal { opacity: 0; transform: translateY(18px); }
+    .section-reveal.is-visible { opacity: 1; transform: translateY(0); transition: all .9s cubic-bezier(.2,.8,.2,1); }
+    .soft-border {
+      position: relative;
+    }
+    .soft-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(0,126,199,.35), rgba(111,66,193,.25), rgba(0,179,136,.28));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    .nav-link.active { color: #007EC7; }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      border-radius: 999px;
+      padding: .55rem .95rem;
+      font-size: .82rem;
+      border: 1px solid rgba(152,170,194,.22);
+      background: rgba(255,255,255,.72);
+      color: #1A1F2C;
+      transition: all .28s ease;
+    }
+    .status-pill::before {
+      content: '';
+      width: .55rem;
+      height: .55rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #007EC7, #6F42C1);
+      box-shadow: 0 0 16px rgba(0,126,199,.35);
+    }
+    .status-pill.hovered {
+      background: rgba(0,179,136,.11);
+      color: #1A1F2C;
+      box-shadow: 0 0 0 1px rgba(0,179,136,.18), 0 18px 30px rgba(0,179,136,.10);
+    }
+    .status-pill.hovered::before {
+      background: #00B388;
+      box-shadow: 0 0 18px rgba(0,179,136,.55);
+    }
+    .card-hover {
+      transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease, background .28s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,126,199,.10);
+      border-color: rgba(0,126,199,.22);
+    }
+    .orbit {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(14px);
+      opacity: .9;
+      animation: float 10s ease-in-out infinite;
+    }
+    .hover-note {
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-2px);
+      overflow: hidden;
+      transition: all .28s ease;
+    }
+    .btn-hover:hover .hover-note {
+      max-height: 60px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .btn-hover:hover .main-btn {
+      box-shadow: 0 0 0 1px rgba(0,179,136,.22), 0 18px 50px rgba(0,179,136,.18);
+      border-color: rgba(0,179,136,.35);
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-primary/20 selection:text-primary-dark">
+  <canvas id="bgCanvas" class="fixed inset-0 w-full h-full pointer-events-none opacity-80"></canvas>
+
+  <!-- Top Bar / Nav -->
+  <header class="sticky top-0 z-50 border-b border-slate-200/60 bg-white/70 backdrop-blur-xl">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-20 items-center justify-between gap-4">
+        <a href="#home" class="group flex items-center gap-3">
+          <div class="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-purple text-white shadow-glow">
+            <span class="text-sm font-bold">ZY</span>
+          </div>
+          <div>
+            <p class="text-sm font-semibold tracking-[0.24em] text-slate-500">SOEASY TECH</p>
+            <p class="text-base font-semibold text-slate-900">曾能毅</p>
+          </div>
+        </a>
+
+        <nav class="hidden items-center gap-2 lg:flex" aria-label="主選單">
+          <a href="#home" class="nav-link rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-primary">首頁</a>
+          <a href="#about" class="nav-link rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-primary">關於我</a>
+          <a href="#services" class="nav-link rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-primary">SI 解決方案</a>
+          <a href="#cases" class="nav-link rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-primary">作品集</a>
+          <a href="#blog" class="nav-link rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-primary">技術部落格</a>
+          <a href="#contact" class="nav-link rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-primary">聯絡我</a>
+          <a href="https://calendar.app.google/ekUiowqWN5bxVHzY7" target="_blank" rel="noreferrer" class="ml-2 inline-flex items-center rounded-full border border-primary/30 bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition hover:border-secondary/40 hover:bg-secondary/10 hover:text-secondary">預約諮詢</a>
+        </nav>
+
+        <button id="menuBtn" class="lg:hidden inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 py-2 text-slate-700 shadow-sm" aria-label="開啟選單" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="mobileMenu" class="hidden pb-5 lg:hidden">
+        <div class="glass-strong rounded-3xl p-3 shadow-lg">
+          <div class="grid gap-2">
+            <a href="#home" class="mobile-link rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">首頁</a>
+            <a href="#about" class="mobile-link rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">關於我</a>
+            <a href="#services" class="mobile-link rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">SI 解決方案</a>
+            <a href="#cases" class="mobile-link rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">作品集</a>
+            <a href="#blog" class="mobile-link rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">技術部落格</a>
+            <a href="#contact" class="mobile-link rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100">聯絡我</a>
+            <a href="https://calendar.app.google/ekUiowqWN5bxVHzY7" target="_blank" rel="noreferrer" class="rounded-2xl bg-gradient-to-r from-primary to-purple px-4 py-3 text-sm font-semibold text-white">預約諮詢</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section id="home" class="relative overflow-hidden">
+      <div class="absolute inset-0 grid-fine opacity-70"></div>
+      <div class="absolute -left-24 top-16 h-56 w-56 rounded-full bg-primary/30 blur-3xl"></div>
+      <div class="absolute right-0 top-24 h-72 w-72 rounded-full bg-purple/30 blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-secondary/24 blur-3xl"></div>
+
+      <div class="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div class="grid items-center gap-14 lg:grid-cols-2">
+          <div class="section-reveal">
+            <div class="mb-6 flex flex-wrap items-center gap-3">
+              <span class="status-pill" id="statusPill">Status: Ready to Connect</span>
+              <span class="rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">SI 系統架構師</span>
+              <span class="rounded-full border border-purple/30 bg-purple/10 px-4 py-2 text-sm font-medium text-purple">AI 顧問</span>
+            </div>
+
+            <p class="mb-4 text-sm font-semibold tracking-[0.26em] text-slate-500">ELEGANT AI TECH / PREMIUM SAAS PERSONAL BRAND</p>
+            <h1 class="max-w-3xl text-4xl font-semibold leading-tight text-slate-950 sm:text-5xl lg:text-6xl">
+              <span id="typewriter" class="bg-gradient-to-r from-primary via-purple to-secondary bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer"></span>
+              <span id="cursor" class="ml-1 inline-block align-baseline text-primary">|</span>
+            </h1>
+            <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
+              曾能毅，SoEasy Tech 共同創辦人暨技術長。專注於企業級系統整合、混合雲架構、微服務設計與資安治理，協助企業打造可擴展、可持續、可信賴的數位中樞。
+            </p>
+
+            <div class="mt-10 flex flex-col gap-4 sm:flex-row">
+              <a href="#services" class="btn-hover inline-flex flex-col items-center justify-center rounded-2xl border border-primary/30 bg-white px-6 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:bg-secondary/10">
+                <span class="main-btn text-base font-semibold text-primary">了解 SI 解決方案</span>
+                <span class="hover-note mt-1 text-xs font-medium text-secondary">Status: Ready to Connect</span>
+              </a>
+              <a href="https://calendar.app.google/ekUiowqWN5bxVHzY7" target="_blank" rel="noreferrer" class="btn-hover inline-flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 py-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:bg-secondary/10">
+                <span class="main-btn text-base font-semibold text-slate-900">預約諮詢</span>
+                <span class="hover-note mt-1 text-xs font-medium text-secondary">Status: Ready to Connect</span>
+              </a>
+            </div>
+
+            <div class="mt-12 grid gap-4 sm:grid-cols-3">
+              <div class="glass soft-border rounded-3xl p-5 shadow-sm">
+                <p class="text-3xl font-semibold text-slate-900">8+</p>
+                <p class="mt-1 text-sm text-slate-600">年實務經驗</p>
+              </div>
+              <div class="glass soft-border rounded-3xl p-5 shadow-sm">
+                <p class="text-3xl font-semibold text-slate-900">30+</p>
+                <p class="mt-1 text-sm text-slate-600">大型專案與顧問經驗</p>
+              </div>
+              <div class="glass soft-border rounded-3xl p-5 shadow-sm">
+                <p class="text-3xl font-semibold text-slate-900">3 Cloud</p>
+                <p class="mt-1 text-sm text-slate-600">AWS / Azure / GCP</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative section-reveal lg:justify-self-end">
+            <div class="absolute left-8 top-8 h-28 w-28 rounded-full bg-primary/15 blur-2xl animate-float"></div>
+            <div class="absolute right-8 top-24 h-24 w-24 rounded-full bg-secondary/15 blur-2xl animate-float" style="animation-delay: -2s"></div>
+            <div class="glass-strong soft-border relative overflow-hidden rounded-[2rem] p-6 shadow-[0_20px_80px_rgba(0,126,199,0.10)]">
+              <div class="absolute inset-0 bg-gradient-to-br from-primary/70 via-white to-purple/60"></div>
+              <div class="relative">
+                <div class="mb-6 flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-semibold tracking-[0.24em] text-slate-500">SYSTEM INTEGRATION</p>
+                    <h2 class="mt-1 text-2xl font-semibold text-slate-900">企業轉型的數位中樞</h2>
+                  </div>
+                  <div class="rounded-2xl bg-white/90 p-3 shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 6h16M4 12h8m-8 6h16" />
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <div class="card-hover glass rounded-3xl p-5">
+                    <p class="text-sm font-medium text-slate-500">核心能力</p>
+                    <p class="mt-2 text-lg font-semibold text-slate-900">系統整合 × 雲端架構</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">將 ERP、MES、CRM、SCADA 等系統串接為一致的資料與流程平台。</p>
+                  </div>
+                  <div class="card-hover glass rounded-3xl p-5">
+                    <p class="text-sm font-medium text-slate-500">價值主張</p>
+                    <p class="mt-2 text-lg font-semibold text-slate-900">穩定、擴展、安全</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">以高可用架構與資安治理，支撐企業持續演進與營運韌性。</p>
+                  </div>
+                  <div class="card-hover glass rounded-3xl p-5">
+                    <p class="text-sm font-medium text-slate-500">顧問視角</p>
+                    <p class="mt-2 text-lg font-semibold text-slate-900">從 0 到 1</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">把技術落地成可執行路線，協助企業縮短轉型與導入時間。</p>
+                  </div>
+                  <div class="card-hover glass rounded-3xl p-5">
+                    <p class="text-sm font-medium text-slate-500">專業認證</p>
+                    <p class="mt-2 text-lg font-semibold text-slate-900">PMP / CISSP / GCP PCA</p>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">兼具專案、資安與雲端架構能力，服務更完整。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-24 sm:py-28">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="section-reveal mb-12 max-w-3xl">
+          <p class="text-sm font-semibold tracking-[0.24em] text-primary">ABOUT</p>
+          <h2 class="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">關於我</h2>
+          <p class="mt-4 text-lg leading-8 text-slate-600">我是曾能毅，長期專注於企業資訊系統整合、混合雲架構設計、微服務與資安治理，將技術能力轉化為企業可持續成長的核心引擎。</p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="section-reveal lg:col-span-2 glass-strong soft-border rounded-[2rem] p-8 shadow-sm">
+            <div class="grid gap-8 md:grid-cols-2">
+              <div>
+                <h3 class="text-xl font-semibold text-slate-900">專業背景</h3>
+                <p class="mt-4 leading-8 text-slate-600">現任曾容易科技共同創辦人暨技術長，具備超過 8 年企業級系統整合與數位轉型實戰經驗，參與金融、航空、醫療、製造、高教及零售等領域大型專案。</p>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-slate-900">教育與顧問</h3>
+                <p class="mt-4 leading-8 text-slate-600">曾擔任多家企業與機構顧問與講師，並於大學與專業單位分享雲端架構、AI 製造與企業系統整合經驗，協助組織建立面向未來的技術能力。</p>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-slate-900">核心技能</h3>
+                <p class="mt-4 leading-8 text-slate-600">Microservices、Docker、Kubernetes、Hybrid Cloud、API Gateway、CI/CD、ESB 整合，以及 AWS、Azure、GCP 多雲架構設計。</p>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold text-slate-900">價值信念</h3>
+                <p class="mt-4 leading-8 text-slate-600">科技不只是工具，而是創造改變的能力。真正優秀的技術，應能降低複雜度、提升韌性，並持續推動企業創新。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-reveal glass rounded-[2rem] p-8 shadow-sm">
+            <p class="text-sm font-semibold tracking-[0.24em] text-slate-500">PROFILE</p>
+            <div class="mt-6 space-y-5">
+              <div>
+                <p class="text-sm text-slate-500">姓名</p>
+                <p class="mt-1 text-lg font-semibold text-slate-900">曾能毅</p>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500">現職</p>
+                <p class="mt-1 text-lg font-semibold text-slate-900">曾容易科技 SoEasy Tech 共同創辦人暨技術長</p>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500">定位</p>
+                <p class="mt-1 text-lg font-semibold text-slate-900">SI 系統架構師 × AI 顧問</p>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500">關鍵能力</p>
+                <p class="mt-1 text-lg font-semibold text-slate-900">雲端整合 / 資安治理 / 數位轉型</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="py-24 sm:py-28 bg-white/40">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="section-reveal mb-12 max-w-3xl">
+          <p class="text-sm font-semibold tracking-[0.24em] text-primary">SERVICES</p>
+          <h2 class="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">SI 解決方案</h2>
+          <p class="mt-4 text-lg leading-8 text-slate-600">以企業級系統整合為核心，協助企業打破資訊孤島，建立高效、彈性且可持續演進的數位基礎架構。</p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M3 13h18M3 6h18M3 18h18" /></svg>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">企業級 API 與異質系統整合</h3>
+            <p class="mt-4 leading-8 text-slate-600">串聯 ERP、MES、CRM、SCADA 等核心系統，實現跨平台資料流通與流程自動化，提升營運效率與決策品質。</p>
+          </article>
+
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-purple/10 p-3 text-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 6v12m6-6H6" /></svg>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">混合雲與地端架構設計</h3>
+            <p class="mt-4 leading-8 text-slate-600">兼顧彈性擴展、資安治理與成本優化，協助企業建立可穩定演進的雲地整合基礎。</p>
+          </article>
+
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-secondary/10 p-3 text-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 8c-2.21 0-4 1.57-4 3.5S9.79 15 12 15s4 1.57 4 3.5S14.21 22 12 22m0-14c2.21 0 4 1.57 4 3.5" /></svg>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">IT/OT 自動化營維與運維管理</h3>
+            <p class="mt-4 leading-8 text-slate-600">推動智慧化監控與預防性維護，強化系統穩定性、可用性與營運可視性。</p>
+          </article>
+
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 6h16M4 12h10M4 18h7" /></svg>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">企業網路與資訊安全防護</h3>
+            <p class="mt-4 leading-8 text-slate-600">打造符合現代資安需求的零信任環境，建立端到端的治理、監測與防護體系。</p>
+          </article>
+
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-purple/10 p-3 text-purple">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 7h16M4 12h16M4 17h16" /></svg>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">巨量資料中台與數據倉儲</h3>
+            <p class="mt-4 leading-8 text-slate-600">建立企業級大數據底座，賦能 AI 應用、資料分析與智慧決策。</p>
+          </article>
+
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-secondary/10 p-3 text-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 4v16m8-8H4" /></svg>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">數位轉型顧問與 OMO 流程設計</h3>
+            <p class="mt-4 leading-8 text-slate-600">從私有化系統中台規劃到供應鏈自動化，以從 0 到 1 的實戰經驗加速轉型。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cases -->
+    <section id="cases" class="py-24 sm:py-28">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="section-reveal mb-12 max-w-3xl">
+          <p class="text-sm font-semibold tracking-[0.24em] text-primary">PORTFOLIO</p>
+          <h2 class="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">作品集 / 案例展示</h2>
+          <p class="mt-4 text-lg leading-8 text-slate-600">以下以代表性專案類型呈現，突顯企業級整合、雲端架構與數位轉型的實戰能力。</p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <article class="section-reveal glass-strong soft-border rounded-[2rem] p-7 card-hover">
+            <p class="text-sm font-semibold tracking-[0.2em] text-slate-500">CASE 01</p>
+            <h3 class="mt-3 text-xl font-semibold text-slate-900">高併發系統與跨國資料同步</h3>
+            <p class="mt-4 leading-8 text-slate-600">設計可擴展架構與資料同步機制，支援跨區營運與高壓交易情境。</p>
+          </article>
+          <article class="section-reveal glass-strong soft-border rounded-[2rem] p-7 card-hover">
+            <p class="text-sm font-semibold tracking-[0.2em] text-slate-500">CASE 02</p>
+            <h3 class="mt-3 text-xl font-semibold text-slate-900">智慧工廠與 IT/OT 整合</h3>
+            <p class="mt-4 leading-8 text-slate-600">整合現場設備與資訊平台，提升監控、維運與生產可視化能力。</p>
+          </article>
+          <article class="section-reveal glass-strong soft-border rounded-[2rem] p-7 card-hover">
+            <p class="text-sm font-semibold tracking-[0.2em] text-slate-500">CASE 03</p>
+            <h3 class="mt-3 text-xl font-semibold text-slate-900">OMO 新零售與供應鏈自動化</h3>
+            <p class="mt-4 leading-8 text-slate-600">打造線上線下整合流程與資料流中樞，優化營運效率與顧客體驗。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog -->
+    <section id="blog" class="py-24 sm:py-28 bg-white/40">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="section-reveal mb-12 max-w-3xl">
+          <p class="text-sm font-semibold tracking-[0.24em] text-primary">BLOG</p>
+          <h2 class="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">技術部落格</h2>
+          <p class="mt-4 text-lg leading-8 text-slate-600">以實務導向分享架構設計、雲端治理、系統整合與數位轉型方法。</p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-3">
+          <article class="section-reveal glass-strong soft-border rounded-[2rem] p-7 card-hover">
+            <p class="text-sm font-semibold text-primary">Architecture</p>
+            <h3 class="mt-3 text-xl font-semibold text-slate-900">如何規劃可持續演進的企業 SI 架構</h3>
+            <p class="mt-4 leading-8 text-slate-600">從 API、事件驅動到資料治理，建立面向未來的整合藍圖。</p>
+          </article>
+          <article class="section-reveal glass-strong soft-border rounded-[2rem] p-7 card-hover">
+            <p class="text-sm font-semibold text-purple">Cloud</p>
+            <h3 class="mt-3 text-xl font-semibold text-slate-900">混合雲與地端協作的最佳實務</h3>
+            <p class="mt-4 leading-8 text-slate-600">兼顧成本、風險與治理，讓雲地策略真正落地。</p>
+          </article>
+          <article class="section-reveal glass-strong soft-border rounded-[2rem] p-7 card-hover">
+            <p class="text-sm font-semibold text-secondary">AI & Data</p>
+            <h3 class="mt-3 text-xl font-semibold text-slate-900">資料中台如何賦能 AI 與決策</h3>
+            <p class="mt-4 leading-8 text-slate-600">用一致資料底座支撐分析、自動化與智慧應用場景。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Products & Solutions -->
+    <section id="products" class="py-24 sm:py-28 bg-white/40">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="section-reveal mb-12 max-w-3xl">
+          <p class="text-sm font-semibold tracking-[0.24em] text-primary">SOLUTIONS</p>
+          <h2 class="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">核心產品與技術解決方案</h2>
+          <p class="mt-4 text-lg leading-8 text-slate-600">專為企業數位轉型打造的頂尖解決方案，涵蓋系統整合自動化、合規架構與知識中台化。</p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-3">
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-primary/10 p-3 text-primary">
+              <i class="fab fa-github h-6 w-6" style="width: 24px; height: 24px; line-height: 24px; display: inline-block; text-align: center;"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">Vibe Coding：自動化系統整合與雲端運維學習圈</h3>
+            <p class="mt-4 leading-8 text-slate-600">訂閱 Vibe Coding 系統整合學習圈，掌握以 AI 驅動的自動化部署與 CI/CD 流程，帶領企業架構師與 MIS 團隊走入低代碼、高效率的自動化維運新世界。</p>
+            <a href="https://courses.taiwanmds.com/product/information?p=02c0c7b9ec7b11f0b3480242ac110002" target="_blank" rel="noreferrer" class="mt-5 inline-flex items-center gap-2 text-base font-semibold text-primary hover:text-secondary">
+              了解更多
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
+
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-purple/10 p-3 text-purple">
+              <i class="fas fa-shield-alt h-6 w-6" style="width: 24px; height: 24px; line-height: 24px; display: inline-block; text-align: center;"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">保險科技中台：當法規成為核心架構，AI 更是金融合規的引擎</h3>
+            <p class="mt-4 leading-8 text-slate-600">從核心帳務系統、嚴謹法規到跨部門資料中台化，專為保險與金融業打造的 AI 科技中樞，協助企業在符合資安合規的架構下，架設最懂法規的系統整合夥伴。</p>
+            <a href="https://judgai.com/" target="_blank" rel="noreferrer" class="mt-5 inline-flex items-center gap-2 text-base font-semibold text-purple hover:text-secondary">
+              了解更多
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
+
+          <article class="section-reveal card-hover glass-strong soft-border rounded-[2rem] p-7">
+            <div class="mb-5 inline-flex rounded-2xl bg-secondary/10 p-3 text-secondary">
+              <i class="fas fa-brain h-6 w-6" style="width: 24px; height: 24px; line-height: 24px; display: inline-block; text-align: center;"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-slate-900">SayMind：企業級私有化 RAG 知識庫與異質文件整合系統</h3>
+            <p class="mt-4 leading-8 text-slate-600">基於 LangChain 與向量資料庫（Vector DB）架構搭建的企業級 RAG 系統，支援跨格式地端文件、PDF 自動化安全匯入與高精度檢索，實現安全、合規的企業內部知識中台化。</p>
+            <a href="https://judgai.com/saymind" target="_blank" rel="noreferrer" class="mt-5 inline-flex items-center gap-2 text-base font-semibold text-secondary hover:text-secondary">
+              了解更多
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="py-24 sm:py-28">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-8 lg:grid-cols-2">
+          <div class="section-reveal">
+            <p class="text-sm font-semibold tracking-[0.24em] text-primary">CONTACT</p>
+            <h2 class="mt-3 text-3xl font-semibold text-slate-950 sm:text-4xl">聯絡我 / 預約諮詢</h2>
+            <p class="mt-4 max-w-2xl text-lg leading-8 text-slate-600">歡迎與我討論企業 SI 架構、雲端整合、資安治理、資料中台、AI 應用與數位轉型規劃。</p>
+
+            <div class="mt-8 space-y-4">
+              <div class="glass rounded-3xl p-6 shadow-sm">
+                <p class="text-sm font-semibold tracking-[0.24em] text-slate-500">外部依賴庫 (Dependencies)</p>
+                <div class="mt-4 flex flex-wrap items-center gap-3">
+                  <a href="https://aistudy.pse.is/linemdsgroup" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 transition hover:border-secondary/40 hover:text-secondary">
+                    <i class="fab fa-line text-xl"></i>
+                    LINE
+                  </a>
+                  <a href="https://www.facebook.com/MarketingDataScienceTMR/" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 transition hover:border-primary/40 hover:text-primary">
+                    <i class="fab fa-facebook-f text-xl"></i>
+                    Facebook
+                  </a>
+                  <a href="https://www.linkedin.com/in/howardzhong/" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 transition hover:border-primary/40 hover:text-primary">
+                    <i class="fab fa-linkedin-in text-xl"></i>
+                    LinkedIn
+                  </a>
+                  <a href="https://github.com/HowardNTUST" target="_blank" rel="noreferrer" class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 transition hover:border-slate-400 hover:text-slate-900">
+                    <i class="fab fa-github text-xl"></i>
+                    GitHub
+                  </a>
+                </div>
+              </div>
+              <div class="glass rounded-3xl p-6 shadow-sm">
+                <p class="text-sm font-semibold tracking-[0.24em] text-slate-500">填寫需求表單</p>
+                <p class="mt-3 text-base leading-7 text-slate-700">請點選表單連結，提交您的系統整合與雲端需求，我會儘快回覆您的專案規劃建議。</p>
+                <a href="https://forms.gle/nuPmNisP8ZmmNfan7" target="_blank" rel="noreferrer" class="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-primary to-purple px-5 py-4 text-base font-semibold text-white shadow-glow transition hover:opacity-95">
+                  前往填寫表單
+                </a>
+              </div>
+            </div>
+
+            <div class="mt-8 grid gap-4 sm:grid-cols-2">
+              <div class="glass rounded-3xl p-6 shadow-sm">
+                <p class="text-sm font-medium text-slate-500">合作方向</p>
+                <p class="mt-2 text-base leading-7 text-slate-700">企業系統整合、混合雲架構、IT/OT 自動化、資料中台、顧問與講座。</p>
+              </div>
+              <div class="glass rounded-3xl p-6 shadow-sm">
+                <p class="text-sm font-medium text-slate-500">預約諮詢</p>
+                <a href="https://calendar.app.google/ekUiowqWN5bxVHzY7" target="_blank" rel="noreferrer" class="mt-2 inline-flex items-center gap-2 text-base font-semibold text-primary hover:text-secondary">
+                  立即預約
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-reveal glass-strong soft-border rounded-[2rem] p-8 shadow-sm">
+            <div class="grid gap-6">
+              <div>
+                <p class="text-sm font-semibold tracking-[0.24em] text-slate-500">需求表單</p>
+                <h3 class="mt-3 text-2xl font-semibold text-slate-900">填寫需求表單，讓我們更快對接您的專案</h3>
+                <p class="mt-4 text-base leading-7 text-slate-600">請透過 Google Form 提交您的企業系統整合、雲端運維或 AI 資料中台需求，我會儘速提供專業回覆與安排後續諮詢。</p>
+              </div>
+              <a href="https://forms.gle/mCDu2BFK6DuZKxvF6" target="_blank" rel="noreferrer" class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-primary to-purple px-5 py-4 text-sm font-semibold text-white shadow-glow transition hover:opacity-95">
+                前往填寫需求表單
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-200/70 bg-white/70 py-8 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 sm:px-6 lg:px-8 md:flex-row md:items-center md:justify-between">
+      <p class="text-sm text-slate-500">© 2026 曾能毅｜SoEasy Tech. All rights reserved.</p>
+      <p class="text-sm text-slate-500">SI 系統架構師 × AI 顧問 × 數位轉型專家</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn?.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+    });
+
+    // Smooth active nav highlight
+    const sections = [...document.querySelectorAll('section[id]')];
+    const navLinks = [...document.querySelectorAll('.nav-link')];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(a => a.classList.remove('active'));
+          const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+          active?.classList.add('active');
+        }
+      });
+    }, { threshold: 0.45 });
+    sections.forEach(sec => observer.observe(sec));
+
+    // Reveal on scroll
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.section-reveal').forEach(el => revealObserver.observe(el));
+
+    // Status pill hover effect
+    const statusPill = document.getElementById('statusPill');
+    document.querySelectorAll('.btn-hover').forEach(el => {
+      el.addEventListener('mouseenter', () => statusPill?.classList.add('hovered'));
+      el.addEventListener('mouseleave', () => statusPill?.classList.remove('hovered'));
+    });
+
+    // Typewriter
+    const typeText = '打破資訊孤島，架構企業轉型的數位中樞。';
+    const typewriter = document.getElementById('typewriter');
+    const cursor = document.getElementById('cursor');
+    let i = 0;
+    function typeLoop() {
+      if (!typewriter) return;
+      typewriter.textContent = typeText.slice(0, i);
+      i += 1;
+      if (i <= typeText.length) {
+        setTimeout(typeLoop, 78);
+      } else {
+        cursor?.classList.add('opacity-0');
+      }
+    }
+    window.addEventListener('load', typeLoop);
+
+    // Background particle network canvas
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let w, h, particles;
+
+    function resize() {
+      w = canvas.width = window.innerWidth * devicePixelRatio;
+      h = canvas.height = window.innerHeight * devicePixelRatio;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      initParticles();
+    }
+
+    function initParticles() {
+      const count = Math.min(72, Math.floor(window.innerWidth / 18));
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: (Math.random() * 1.9 + 1.0) * devicePixelRatio,
+        vx: (Math.random() - 0.5) * 0.22 * devicePixelRatio,
+        vy: (Math.random() - 0.5) * 0.22 * devicePixelRatio
+      }));
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.fillRect(0, 0, w, h);
+
+      // soft glow blobs
+      const g1 = ctx.createRadialGradient(w*0.16, h*0.18, 0, w*0.16, h*0.18, w*0.16);
+      g1.addColorStop(0, 'rgba(0,126,199,0.10)');
+      g1.addColorStop(1, 'rgba(0,126,199,0)');
+      ctx.fillStyle = g1;
+      ctx.fillRect(0, 0, w, h);
+
+      const g2 = ctx.createRadialGradient(w*0.84, h*0.18, 0, w*0.84, h*0.18, w*0.18);
+      g2.addColorStop(0, 'rgba(111,66,193,0.08)');
+      g2.addColorStop(1, 'rgba(111,66,193,0)');
+      ctx.fillStyle = g2;
+      ctx.fillRect(0, 0, w, h);
+
+      // network lines
+      for (let a = 0; a < particles.length; a++) {
+        const p = particles[a];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(0,126,199,0.38)';
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        for (let b = a + 1; b < particles.length; b++) {
+          const q = particles[b];
+          const dx = p.x - q.x;
+          const dy = p.y - q.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150 * devicePixelRatio) {
+            ctx.strokeStyle = `rgba(0,126,199,${0.12 * (1 - dist / (150 * devicePixelRatio))})`;
+            ctx.lineWidth = 1 * devicePixelRatio;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    draw();
+  </script>
+</body>
+</html>
